@@ -1,0 +1,1 @@
+export PATH=/home/chiliwang/work/aml/a113/toolchain/gcc/linux-x86/aarch64/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin:/home/chiliwang/work/aml/a113/output/mesonaxg_s40a0_32_512m/host/usr/bin/:$PATH
