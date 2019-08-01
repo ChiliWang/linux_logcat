@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+#define _XOPEN_SOURCE 500
+#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -27,7 +28,6 @@
 
 #include "private/android_filesystem_config.h"
 #include "cutils/log.h"
-
 static pid_t child_pid = (pid_t)-1;
 
 void fatal(const char *msg) {
@@ -168,13 +168,13 @@ int main(int argc, char* argv[]) {
             ((child_devname = (char*)ptsname(parent_ptty)) == 0)) {
         fatal("Problem with /dev/ptmx\n");
     }
-
     pid = fork();
     if (pid < 0) {
         fatal("Failed to fork\n");
     } else if (pid == 0) {
         child_ptty = open(child_devname, O_RDWR);
         if (child_ptty < 0) {
+			printf("can't open child dev:%s\n", child_devname);
             fatal("Problem with child ptty\n");
         }
 
@@ -190,8 +190,9 @@ int main(int argc, char* argv[]) {
         // switch user and group to "log"
         // this may fail if we are not root, 
         // but in that case switching user/group is unnecessary 
-        //#int ret = setgid(AID_LOG);
-        if (setuid(AID_LOG) == -1) {
+        //int ret = setgid(AID_LOG);
+		// linux /dev/log_xxx node mode is only root can operation, so set uid to root
+        if (setuid(0) == -1) {
           // set sighandler to forward signals to child process only when
           // setuid fails and/so uid of this parent process is same to uid of
           // child process.
